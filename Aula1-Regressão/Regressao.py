@@ -63,18 +63,19 @@ X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2)
 # Dividindo os eixo em data de treinamento e data de teste
 
 
-clf= LinearRegression(n_jobs=-1)
-# N jobs seria o quanto do seu cpu tu quer usar para o treinamento -1 seria tudo
-clf.fit(X_train,y_train)
-with open('linearregression.pickle', 'wb') as f:
-	# wb seria binario
-	pickle.dump(clf,f)
+# clf= LinearRegression(n_jobs=-1)
+# # N jobs seria o quanto do seu cpu tu quer usar para o treinamento -1 seria tudo
+# clf.fit(X_train,y_train)
+# with open('linearregression.pickle', 'wb') as f:
+# 	# wb seria binario
+# 	pickle.dump(clf,f)
 
 pickle_in =open('linearregression.pickle', 'rb')
 clf = pickle.load(pickle_in)
 # Pickling seria a conversao da sua data de treinamento, para binario para poder salvar essa data de maneira rapida eficaz
 # Ou seja quando eu rodar esse codigo eu nao vou ter que ficar treinando toda hora eu salvo a data de treinamento, e para quando
-# Eu n precisar ter q passar por gigabytes de informacao eu comentos isso dkai
+# Eu n precisar ter q passar por gigabytes de informacao eu comentos isso daki e quando eu quero ter um atualizado para caso de daytrade
+# Ta aqui ja
 precisao=clf.score(X_test,y_test)
 print(precisao)
 

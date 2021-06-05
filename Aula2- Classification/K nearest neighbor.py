@@ -25,8 +25,9 @@ clf.fit(X_train, y_train)
 precisao=clf.score(X_test,y_test)
 
 amostra_exemplo=np.array([[4,2,1,1,1,2,3,2,1]])
-amostra_exemplo= amostra_exemplo.reshape(1,-1)
-# Utilizada para testar aquilo que tipo celular que nao existe na nossa data
+amostra_exemplo= amostra_exemplo.reshape(len(amostra_exemplo),-1)
+# Utilizada para testar aquilo que tipo celular que nao existe na nossa data, eu pego a length da lista
+# Para automatizar o processo
 
 predicao=clf.predict(amostra_exemplo)
 print(precisao)

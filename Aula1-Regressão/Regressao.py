@@ -27,6 +27,7 @@ df['PCT_change']=(df['Adj. Close']-df['Adj. Open'])/ df['Adj. Open'] * 100.0
 
 
 df= df[['Adj. Close', 'HL_PCT','PCT_change','Adj. Volume']]
+# Essas features sao somente  para demonstracao
 
 forecast_col= 'Adj. Close'
 # Features, seria o conjunto de dados que voce esta inserindo para ser capaz de formatar a analise
@@ -50,7 +51,7 @@ X= np.array(df.drop(['label'],1))
 # Convertendo a dataframe, eliminando os labelse e transformanmdo em array
 X=preprocessing.scale(X)
 X_lately = X[-forecast_out:]
-X = X[:-forecast_out:]
+X = X[:-forecast_out]
 # Preprocessing, seria associar um conjunto de dados a um axis, centerizando ele de acordo a media e a relacao de variancia entre variaveis
 # Nao recomendado para modelos com alto influxo devido a fragilidade desse processo, que pode causar data leaks. Ou antes de treinar e testar a data
 # Pode fazer com que eles se misturem, oque e nono

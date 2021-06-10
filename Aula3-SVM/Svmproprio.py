@@ -7,7 +7,7 @@ class support_vector_machine:
 	# Nenhum dos metodos de uma classe irao rodar alem do init metodo
 	def __init__(self,visualization=True):
 		self.visualization= visualization
-		self.color = {1:'r',-1:'b'}
+		self.colors = {1:'r',-1:'k'}
 		if self.visualization:
 			self.fig = plt.figure()
 			self.ax = self.fig.add_subplot(1,1,1)
@@ -17,10 +17,10 @@ class support_vector_machine:
 		self.data = data
 		# { a magnitude de w : [w,b]  }
 		opt_dict = {}
-		transforms = {[[1,1],[-1,1],[1,-1],[-1,-1]]}
+		transforms = [[1,1],[-1,1],[1,-1],[-1,-1]]
 		all_data = []
 		for yi in self.data:
-			for featureset in self.data[y1]:
+			for featureset in self.data[yi]:
 				for feature in featureset:
 					all_data.append(feature)
 		# Pegando features do dataset
@@ -32,6 +32,9 @@ class support_vector_machine:
 		# Tambem evitar point of expense, basicamente o custo para rodar os steps
 		# Tamanho dos pulas pulas iniciais do grafico, vai diminuindo a medida que vamo achando
 		# Evitar min local
+		# Como saber se eu tenho que fazer mais passos,
+		# Lembre-se yi(xi. w+b) = 1
+		# Voce vai saber quando tanto a suas classes positivas e negativas forem mais proximas de 1
 		# B RANGE E EXTREMAMENTE CARO EM RELACAO A CPU, E ELE N VALE TANTO QUANTO ACHAR VETOR W
 		b_range_multiple=5
 		#
@@ -66,19 +69,73 @@ class support_vector_machine:
 					optimized= True
 					print('	Otimizado um passo')
 				else:
-					w=w-step
+					w= w - step
 
-
+			norms= sorted([n for n in opt_dict])
+			# Lista organizada de todas as magnitudes
+			opt_choice = opt_dict[norms[0]]
+			# Melhor escolha, onde o w e o menor possivel
+			# Lembre-se o dicionario de magnitude w e assim, /w/: [w,b]
+			# Logo opt_dict norm 0 e o w
+			self.w = opt_choice[0]
+			self.b = opt_choice[1]
+			latest_optimun = opt_choice[0][0]+step*2
 
 
 	def predict(self,features):
 		# sign(x.w+b)
 		# Funcao base para definir os tracejados da estrada
 		classification = np.sign(np.dot(np.array(features),self.w)+self.b)
+		if classification !=0 and self.visualization:
+			self.ax.scatter(features[0],features[1], s=200, marker='*', c= self.colors[classification])
 		# Dot e o produto de dois arrays
 		return classification
+	def visualize(self):
+		[[self.ax.scatter(x[0],x[1],s=100,color=self.colors[i]) for x in data_dict[i]] for i in data_dict]
+		# Hiperplano = x.w+b
+		# v =x.w+b
+		#psv=1
+		#nsv=-1
+		#dec = 0
+		def hyperplane(x,w,b,v):
+			return(-w[0]*x-b+v / w[1])
+			# Funcao feita apra desenhar hiperplano
+		datarange = (self.min_feature_value*0.9,self.max_feature_value*1.1)
+		# Feito para limitar o grafico
+		hyp_x_min= datarange[0]
+		hyp_x_max= datarange[1]
+		# Limitando o limite da data
+		#(wx+b) = 1
+		# Vetores de suporte positivos no hiperplano
+		psv1=hyperplane(hyp_x_min,self.w,self.b,1)
+		psv2=hyperplane(hyp_x_max,self.w,self.b,1)
+		self.ax.plot([hyp_x_min,hyp_x_max],[psv1,psv2])
+
+		#(wx+b) = -1
+		# Vetores de suporte negativo no hiperplano
+		nsv1=hyperplane(hyp_x_min,self.w,self.b,-1)
+		nsv2=hyperplane(hyp_x_max,self.w,self.b,-1)
+		self.ax.plot([hyp_x_min,hyp_x_max],[nsv1,nsv2])
+
+		#(wx+b) = 0
+		# Vetores de decisao
+		db1=hyperplane(hyp_x_min,self.w,self.b,0)
+		db2=hyperplane(hyp_x_max,self.w,self.b,0)
+		self.ax.plot([hyp_x_min,hyp_x_max],[db1,db2])
+
+		plt.show()
 
 
+data_dict = {-1:np.array([[1,7],
+                          [2,8],
+                          [3,8],]),
+             
+             1:np.array([[5,1],
+                         [6,-1],
+                         [7,3],])}
 
-data_dict= {-1:np.array([[1,7],[2,8],[3,8],]),1:np.array([[5,1],[6,-1],[7,3],])}
+svm = support_vector_machine()
+svm.fit(data=data_dict)
+svm.visualize()
 
+# 

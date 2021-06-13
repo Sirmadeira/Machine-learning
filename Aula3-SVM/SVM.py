@@ -21,6 +21,8 @@ clf = svm.SVC(kernel = "linear")
 clf.fit(X_train, y_train)
 confidence = clf.score(X_test, y_test)
 print(confidence)
+# Saber o numero de support vectors
+print(clf.n_support_)
 
 example_measures = np.array([[4,2,1,1,1,2,3,2,1]])
 example_measures = example_measures.reshape(len(example_measures), -1)

@@ -12,7 +12,8 @@ X = np.array([[1, 2],
               [9, 11]])
 
 plt.scatter(X[:, 0],X[:, 1], s=150)
-
+# Datapoint inicial para analise
+plt.show()
 colors= 10*['g','r','c','b','k']
 
 class K_means:
@@ -26,6 +27,7 @@ class K_means:
         # Selecionando os primeiro centroids, nao e randomico, pode ser feito por shuffling no data type mas nao quis
         for i in range(self.k):
             self.centroids[i] = data[i]
+        # Para ver  as mudancas entre os centroides, troque self.max_iter por 1, 2 ,3 dependendo do numero de vezes
         for i in range(self.max_iter):
             self.classifications = {}
             # Criando classificadores de acordo com o numero de ks
@@ -52,6 +54,8 @@ class K_means:
                 centroide_atual = self.centroids[c]
                 # Se alguns dos centroides for maior do que a tolerancia, definida la em cima nos nao vamos estar optimizado
                 if np.sum(( centroide_atual - centroide_original)/centroide_original*100.0) > self.tol:
+                    # Isso daki vai me dizer quantas interacoes eu passei por
+                    print(np.sum(( centroide_atual - centroide_original)/centroide_original*100.0))
                     optimized= False
             if optimized:
                 break

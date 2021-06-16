@@ -7,7 +7,7 @@ import random
 
 centros=random.randrange(2,8)
 print(centros)
-X,y = make_blobs(n_samples=50,centers=centros, n_features=2)
+X,y = make_blobs(n_samples=110,centers=centros, n_features=2)
 # X = np.array([[1, 2],
 #               [1.5, 1.8],
 #               [5, 8 ],
@@ -25,9 +25,10 @@ colors = 10*["g","r","c","b","k"]
 
 class Mean_shift:
     # Nesse caso eu fiz por hard code, ou seja eu tenho que definir o radius, algo que e nono
-    # Agora vou tentar fazer por norm_steps que seria em partes muito pequenas que vao engolindo uma a outra.
-    # Ou melhor conhecido como dynamic bandwidth,
-    def __init__(self,radius=None, radius_norm_step=100):
+    # Agora vou tentar fazer por passos, basicamente vou pegando um monte de radius, de larguras diferentes
+    #Se um ponto estiver mais perto ele tera um peso maior. Do que outro muito distando
+    # Isso se chama dynamic bandwidth,
+    def __init__(self,radius=None, radius_norm_step=1000):
         self.radius = radius
         self.radius_norm_step = radius_norm_step
     def fit(self,data):
@@ -48,15 +49,15 @@ class Mean_shift:
             for i in centroids:
                 in_bandwidth=[]
                 pesos_lista=[]
-                # Isso daki vai ser populado com todos os featuresets, em nosso radius
+                # Isso daki vai ser populado com todos os pontos, em nosso radius
                 centroid=centroids[i]
                 #Pegando o valor do centroide
                 for featureset in data:
                     distancia= np.linalg.norm(featureset-centroid)
-                    # Distancia entre os pontos
+                    # Distancia entre os pontos e centroide
                     if distancia == 0:
                         distancia=0.00001
-                        # Como eu disse eu quero fazer passobem pequenos logo distancia bem pequena 
+                        # Como eu disse eu quero fazer passos bem pequenos logo distancia inicial do bandwidth e  bem pequena 
                     peso_index=int(distancia/self.radius) 
                     if peso_index >self.radius_norm_step-1:
                         #Definindo para caso akl distancia ultrapasse o limite de 100
@@ -67,7 +68,7 @@ class Mean_shift:
                     #to_add= (pesos[peso_index]**2)*[featureset]
                     #in_bandwidth+= to_add
                     # Posso fazer plus equals  porque e uma lista dentro de uma lista
-                # Juncionando os bandwith caso ele se encaixe dentro do radius
+                # Fazendo as medios  dos bandwith para ele definir novo centroid
                 novo_centroid=np.average(in_bandwidth,axis=0,weights=np.array(pesos_lista))
                 # Pegando a media dos centroides dentro da bandwidth
                 novo_centroids.append(tuple(novo_centroid))
@@ -82,13 +83,13 @@ class Mean_shift:
                     #Se eles forem identicos a gente passa
                     elif np.linalg.norm(np.array(i)-np.array(ii)) <= self.radius and ii not in to_pop:
                         #Se a distancia entre os unicos forem menores do que o radius. eu acrescento eles a lista
-                        # Dei uma melhorada para nao adicionar akls que ja tao no radius
+                        # Dei uma melhorada para nao adicionar akls que ja tao no radius ou raio
                         to_pop.append(ii)
                         # Eu fiz desse jeito poruqe eu nao posso inteirar pela lista enquanto eu passo por ela
                         break
             for i in to_pop:
                 uniques.remove(i)
-                #Removendo eles
+                #Removendo eles 
             prev_centroids = dict(centroids)
             centroids={}
             for i in range(len(uniques)):
@@ -115,6 +116,7 @@ class Mean_shift:
             distancias= [np.linalg.norm(featureset-self.centroids[centroid]) for centroid in self.centroids]
             classification= distancias.index(min(distancias))
             self.classifications[classification].append(featureset)
+            #Classificando
 
         def predict(self,data):
             distancias= [np.linalg.norm(featureset-self.centroids[centroid]) for centroid in self.centroids]

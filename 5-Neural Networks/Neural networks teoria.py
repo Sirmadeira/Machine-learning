@@ -99,4 +99,62 @@
 #Aviso a gente se utilizava de soma dos residuos ao quadrado para avaliar o quao bem a data era treinada ou se encaixava
 #Devido ao uso da softmax functions que tem outputs de predicao entre 1 e 0. 
 #A gente precisa se utiliza de cross entropy para verificar o quao bem a neural se encaixa na data
-#Cross entropy
+#CROSS ENTROPY
+#Tem uma formula geral e e relativamente simples, seria:
+#Cross entropy= -log com base euler(valor do output pos softmax ou a predicted probability)
+#A formula verdadeira tem uma somataria, de todos outputs. No entanto as probabilidades das outras conclusoes sao nulificadas
+#Para calcular o total error vc pega todas as formulas de todas as classes(n de outputs) e adiciona
+#Se voce comparar as funcoes ssr e cross entropy, vc comeca a entender pq se utiliza ela
+#Na sum squared residuals, a funcao entre e 0 e 1 e basicamente igual, e uma linha reta
+#Enquanto na cross entropy, ela sobe radicalmente perto do 0 e vira linha reta no 1
+#Entao quando a gente se utilizar de gradiente descente, a reta de avaliacao ssr vai ser bem retinha. Fazendo com que os step sizes
+#Sejam muito pequenos
+#Enquanto no da cross entropy eles vai ser muito maiores
+#Mas e agora como fazer o backpropagation
+#BACKPROPAGATION COM CROSS ENTROPY
+#Para poder otimizar o bias a ser melhorado a gente precisa do gradiente descente o que faz com que a gente precise calcular a derivada
+#Dele de acordo com a cross entropy
+#Formula d CE output/d bias a ser melhorado
+#Tendo em consideracao que a cross entropy e interligado a bias final.Pelo output predito de uma das classes e a funcao
+#Final achada, a gente pode se usar da chain rule para montar a associacao
+#Que seria: d CEoutput/d bias a ser melhorado = d CEoutput/d probabilidade do output * d probabilidade do output/d funcao final(raw output) do output * d funcao final do output / d bias a ser melhorado
+# O que resulta , probabilidade do output -1
+#Vale lembrar que a probabilidade de output seguida tem a mesma funcao final do que a inicial, logo
+#d CEoutpu segundo/ d bias da funcao (nesse caso o mesmo da de cima)=d CE probabilidade secundaria/ d predicao do output secundaria * d predicao do output secundaria/d funcao final * d Funcao final/d bias a ser melhorado
+#o que resulta, na prababilidade do output original
+#Todos os output das classe sucessoras, vao ser a probabilidade do output da original
+#obviamente sendo definido pelo bias a ser melhorado
+#Logo se for o bias da primeira classe, ele vai ter a prababilidade do output -1 e o resto vai ter a prababilidade do output como derivada
+#Se for da segunda, ele e o que vai ter a probabilidade do output - 1 e o resto vai ter a prababilidade do output como derivada
+#E assim vai
+#Voltando ao tema, se nos fizermos a funcao em que eixo x seria um monte de bias a serem melhorados random e o eixo y a total cross entropy(soma das entropias)
+#Se a gente achar o valor minimo deste grafico, ou em outras palavras o b a ser melhorado minimo
+#O que a gente acha por gradiente descente, fazendo entao a formula
+#d Cross entropy/ d Do b final a ser achado =dCE(Pred1)/ db a ser melhorado + dCE(Pred1)/ db a ser melhorado... e assim vai
+#Depende dos numeros de classes, tendo como final a inclinacao do ponto. Que ao por na formula
+#Step size= inclinacao * learning rate achamos o step size.
+#Novo b a ser melhorado = velho b a ser melhorado - step size
+#E repete o processo de gradiencia, ate as predicoes nao melhorarem mais
+#CLASSIFICACAO DE IMAGENS USANDO NEURAL
+#Para identificar imagens voce precisa se utilizar de uma convulutional neural network
+#Imagens sao nada mais alem de um monte de pixels
+#Para voce analisar uma imagens tudo que voce tem que fazer e por todos os pixels num formoto de coluna e considerar eles como nodes
+#No entanto esse metodo e muito pesado, alem do mais ele n tolera pequenas mudancas no angulo da imagen e nao tira vantagem das imagens complexas
+#Logo se utilizarmos de uma convolutional network que evita todos esses problemas a gente fica mais suave
+#A primeira coisa que ela faz e filtrar a imagen, e pegar um conjunto pequeno de pixels randomicos
+#Depois disso ela treina e reajeita os filtros atraves de backpropagation
+#Depois disso ela aplica o filtro da imagen e multiplica cada pixel da imagen por cada pixel do filtro,
+# e adiciona todos eles no final. O nome disso e dot product
+#Ao calcularmos o dot product, entre a imagen e o filtro. A gente pode dizer que o filtro e convolved com o input
+#E isso que origina o nome rede neural convolucional
+#Depois do processo de dot product, voce move um ou mais pixels para lado e fica calculando o dot product entre os pixels
+#Que se sobresaiem na imagen, adiciona um bias,e no final poim o valor num feature map
+#Isso faz com que a gente se aproveite de qualquer relacao que pode haver entre os pixels das imagen
+#Depois disso a gente aplica uma funcao de ativacao no feature map o que zera todos os valores negativos
+#Ae a gente aplica um mesmo filtro, no entanto dessa vez ele so pega o maior valor
+#Esse filtro so pega valores maiores, e ele vai analisando cada parte do feature map em conjuntos de regioes
+#O nome disso e max pooling, ele basicamente ta analisando qual parte do filtro inicial se encaixo melhor na imagen inserida
+#Existe uma alternativa por max pooling, isso seria average pooling ao inves de ele pegar o maximo
+#Ele pega o numero de feature maps pos funcao de ativacao e usa eles como denominador dos valores dentro do feature
+#Depois disso a gente pega o array resultante. E poim na neural normal
+#Obviamente, convulutiona neural ajudam a diminuir o numero de inputs necessarios.
